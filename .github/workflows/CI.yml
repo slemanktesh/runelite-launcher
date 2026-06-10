@@ -58,9 +58,9 @@ jobs:
       with:
         name: windows
         path: |
-          JirenyteSetup.exe
-          JirenyteSetup32.exe
-          JirenyteSetupAArch64.exe
+          AlegesSetup.exe
+          AlegesSetup32.exe
+          AlegesSetupAArch64.exe
         if-no-files-found: error
   linux:
     runs-on: ubuntu-24.04
@@ -86,7 +86,7 @@ jobs:
     - uses: actions/upload-artifact@v4
       with:
         name: jar
-        path: build/libs/Jirenyte.jar
+        path: build/libs/Aleges.jar
         if-no-files-found: error
     - uses: actions/upload-artifact@v4
       with:
@@ -95,8 +95,8 @@ jobs:
           appimagetool-x86_64.AppImage
           runtime-x86_64
           runtime-aarch64
-          Jirenyte.AppImage
-          Jirenyte-aarch64.AppImage
+          Aleges.AppImage
+          Aleges-aarch64.AppImage
         if-no-files-found: error
   macos:
     runs-on: macos-15-intel
@@ -131,13 +131,13 @@ jobs:
       run: ./build-osx-aarch64.sh --build --dmg
     # tar app to keep permissions correct
     - name: tar app
-      run: tar -cf app.tar build/macos-x64/Jirenyte.app build/macos-aarch64/Jirenyte.app build-osx-x64.sh build-osx-aarch64.sh osx/signing.entitlements
+      run: tar -cf app.tar build/macos-x64/Aleges.app build/macos-aarch64/Aleges.app build-osx-x64.sh build-osx-aarch64.sh osx/signing.entitlements
     - uses: actions/upload-artifact@v4
       with:
         name: macos-dmg
         path: |
-          Jirenyte-x64.dmg
-          Jirenyte-aarch64.dmg
+          Aleges-x64.dmg
+          Aleges-aarch64.dmg
         if-no-files-found: error
     - uses: actions/upload-artifact@v4
       with:
