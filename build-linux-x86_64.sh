@@ -3,7 +3,7 @@
 set -e
 
 echo Launcher sha256sum
-sha256sum build/libs/Jirenyte.jar
+sha256sum build/libs/Aleges.jar
 
 pushd native
 cmake -B build-x64 .
@@ -26,10 +26,10 @@ echo "$LINUX_AMD64_CHKSUM linux64_jre.tar.gz" | sha256sum -c
 # Note: Host umask may have checked out this directory with g/o permissions blank
 chmod -R u=rwX,go=rX appimage
 # ...ditto for the build process
-chmod 644 build/libs/Jirenyte.jar
+chmod 644 build/libs/Aleges.jar
 
-cp native/build-x64/src/Jirenyte build/linux-x64/
-cp build/libs/Jirenyte.jar build/linux-x64/
+cp native/build-x64/src/Aleges build/linux-x64/
+cp build/libs/Aleges.jar build/linux-x64/
 cp packr/linux-x64-config.json build/linux-x64/config.json
 cp build/filtered-resources/runelite.desktop build/linux-x64/
 cp appimage/runelite.png build/linux-x64/
@@ -43,11 +43,11 @@ pushd build/linux-x64/
 mkdir -p jre/lib/amd64/server/
 ln -s ../../server/libjvm.so jre/lib/amd64/server/ # packr looks for libjvm at this hardcoded path
 
-# Symlink AppRun -> Jirenyte
-ln -s Jirenyte AppRun
+# Symlink AppRun -> Aleges
+ln -s Aleges AppRun
 
-# Ensure Jirenyte is executable to all users
-chmod 755 Jirenyte
+# Ensure Aleges is executable to all users
+chmod 755 Aleges
 popd
 
 curl -z appimagetool-x86_64.AppImage -o appimagetool-x86_64.AppImage -L https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
@@ -58,6 +58,6 @@ chmod +x appimagetool-x86_64.AppImage
 ./appimagetool-x86_64.AppImage \
 	--runtime-file runtime-x86_64 \
 	build/linux-x64/ \
-	Jirenyte.AppImage
+	Aleges.AppImage
 
-./Jirenyte.AppImage --help
+./Aleges.AppImage --help

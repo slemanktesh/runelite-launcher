@@ -90,8 +90,8 @@ class Updater
 		Path path = Paths.get(command.get());
 
 		// on macOS packr changes the cwd to the resource directory prior to launching the JVM,
-		// causing current.info().command() to return /Applications/Jirenyte.app/Contents/Resources/./Jirenyte
-		// despite the executable really being at /Applications/Jirenyte.app/Contents/MacOS/Jirenyte
+		// causing current.info().command() to return /Applications/Aleges.app/Contents/Resources/./Aleges
+		// despite the executable really being at /Applications/Aleges.app/Contents/MacOS/Aleges
 		path = path.normalize()
 			.resolveSibling(Path.of("..", "MacOS", path.getFileName().toString()))
 			.normalize();
@@ -330,7 +330,7 @@ class Updater
 			return;
 		}
 
-		// the installer kills running Jirenyte processes, so check that there are no others running
+		// the installer kills running Aleges processes, so check that there are no others running
 		List<ProcessHandle> allProcesses = ProcessHandle.allProcesses().collect(Collectors.toList());
 		for (ProcessHandle ph : allProcesses)
 		{

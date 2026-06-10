@@ -11,9 +11,9 @@ BEGIN
     BEGIN
         BLOCK "040904B0"
         BEGIN
-            VALUE "FileDescription",  "Jirenyte"
-            VALUE "OriginalFilename", "Jirenyte.exe"
-            VALUE "ProductName",      "Jirenyte Launcher"
+            VALUE "FileDescription",  "Aleges"
+            VALUE "OriginalFilename", "Aleges.exe"
+            VALUE "ProductName",      "Aleges Launcher"
         END
     END
 

@@ -1,6 +1,6 @@
 {
   "classPath": [
-    "Jirenyte.jar"
+    "Aleges.jar"
   ],
   "mainClass": "net.runelite.launcher.Launcher",
   "vmArgs": [
