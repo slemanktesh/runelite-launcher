@@ -54,13 +54,20 @@ jobs:
       run: |
         call ci\msvc-env.cmd amd64_arm64
         bash ./build-win-aarch64.sh
+    - name: stage website downloads
+      shell: cmd
+      run: |
+        if not exist build\website-downloads mkdir build\website-downloads
+        copy /Y AlegesSetup.exe build\website-downloads\aleges-windows-x64.exe
+        copy /Y AlegesSetup32.exe build\website-downloads\aleges-windows-x86.exe
+        copy /Y AlegesSetupAArch64.exe build\website-downloads\aleges-windows-arm64.exe
     - uses: actions/upload-artifact@v7
       with:
-        name: windows
+        name: website-windows
         path: |
-          AlegesSetup.exe
-          AlegesSetup32.exe
-          AlegesSetupAArch64.exe
+          build/website-downloads/aleges-windows-x64.exe
+          build/website-downloads/aleges-windows-x86.exe
+          build/website-downloads/aleges-windows-arm64.exe
         if-no-files-found: error
   linux:
     runs-on: ubuntu-24.04
@@ -83,20 +90,19 @@ jobs:
       run: ./gradlew build -P RUNELITE_BUILD=$RUNELITE_PROFILE
     - run: ./build-linux-x86_64.sh
     - run: ./build-linux-aarch64.sh
+    - name: stage website downloads
+      run: |
+        mkdir -p build/website-downloads
+        cp build/libs/Aleges.jar build/website-downloads/aleges-client.jar
+        cp Aleges.AppImage build/website-downloads/aleges-linux-x64.AppImage
+        cp Aleges-aarch64.AppImage build/website-downloads/aleges-linux-aarch64.AppImage
     - uses: actions/upload-artifact@v7
       with:
-        name: jar
-        path: build/libs/Aleges.jar
-        if-no-files-found: error
-    - uses: actions/upload-artifact@v7
-      with:
-        name: linux
+        name: website-linux
         path: |
-          appimagetool-x86_64.AppImage
-          runtime-x86_64
-          runtime-aarch64
-          Aleges.AppImage
-          Aleges-aarch64.AppImage
+          build/website-downloads/aleges-client.jar
+          build/website-downloads/aleges-linux-x64.AppImage
+          build/website-downloads/aleges-linux-aarch64.AppImage
         if-no-files-found: error
   macos:
     runs-on: macos-15-intel
@@ -117,18 +123,17 @@ jobs:
     - name: macos-aarch64
       run: ./build-osx-aarch64.sh --build --dmg
     # tar app to keep permissions correct
-    - name: tar app
-      run: tar -cf app.tar build/macos-x64/Aleges.app build/macos-aarch64/Aleges.app build-osx-x64.sh build-osx-aarch64.sh osx/signing.entitlements osx/runelite.icns tools/create-dmg
+    - name: stage website downloads
+      run: |
+        mkdir -p build/website-downloads
+        tar -cf build/website-downloads/aleges-macos-app.tar build/macos-x64/Aleges.app build/macos-aarch64/Aleges.app build-osx-x64.sh build-osx-aarch64.sh osx/signing.entitlements osx/runelite.icns tools/create-dmg
+        cp Aleges-x64.dmg build/website-downloads/aleges-macos-intel.dmg
+        cp Aleges-aarch64.dmg build/website-downloads/aleges-macos-apple-silicon.dmg
     - uses: actions/upload-artifact@v7
       with:
-        name: macos-dmg
+        name: website-macos
         path: |
-          Aleges-x64.dmg
-          Aleges-aarch64.dmg
-        if-no-files-found: error
-    - uses: actions/upload-artifact@v7
-      with:
-        name: macos-app
-        path: |
-          app.tar
+          build/website-downloads/aleges-macos-intel.dmg
+          build/website-downloads/aleges-macos-apple-silicon.dmg
+          build/website-downloads/aleges-macos-app.tar
         if-no-files-found: error
