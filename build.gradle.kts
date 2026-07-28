@@ -35,7 +35,7 @@ repositories {
 }
 
 group = "net.runelite"
-version = "2.7.7-SNAPSHOT"
+version = "2.8.1-SNAPSHOT"
 description = "Aleges Launcher"
 
 dependencies {
@@ -61,7 +61,7 @@ dependencies {
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
-    options.release.set(11)
+    options.release.set(17)
 }
 
 tasks.withType<AbstractArchiveTask>().configureEach {
@@ -69,23 +69,11 @@ tasks.withType<AbstractArchiveTask>().configureEach {
     isReproducibleFileOrder = true
 }
 
-sourceSets.create("java8") {
-    java.srcDirs("src/main/java8")
-}
-
-tasks.jar {
-    from(sourceSets["java8"].output)
-    duplicatesStrategy = DuplicatesStrategy.WARN
-}
-
-tasks.getByName<JavaCompile>("compileJava8Java") {
-    options.release.unset()
-    sourceCompatibility = "1.8"
-    targetCompatibility = "1.8"
-}
-
 tasks {
     processResources {
+        inputs.property("runeliteBuild", project.findProperty("RUNELITE_BUILD") ?: "")
+        inputs.property("launcherVersion", project.version.toString())
+
         filesMatching("**/*.properties") {
             val props = if (project.findProperty("RUNELITE_BUILD") as? String == "runelite")
                 arrayOf(
@@ -144,7 +132,6 @@ application {
 
 tasks.shadowJar {
     from(sourceSets.main.get().output)
-    from(sourceSets.getByName("java8").output)
     minimize {
         exclude(dependency("ch.qos.logback:.*:.*"))
     }

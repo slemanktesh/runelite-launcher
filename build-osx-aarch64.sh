@@ -2,6 +2,8 @@
 
 set -e
 
+PATH=$PATH:tools/create-dmg
+
 APPBASE="build/macos-aarch64/Aleges.app"
 
 build() {
@@ -41,29 +43,37 @@ build() {
     chmod g+x,o+x Contents/MacOS/Aleges
     popd
 
+    echo Dumping Aleges binary
     otool -l $APPBASE/Contents/MacOS/Aleges
+
+    RL_MINOS=$(otool -l $APPBASE/Contents/MacOS/Aleges | awk '/LC_BUILD_VERSION/{f=1} f && /minos/{print $2; exit}')
+    JAVA_MINOS=$(otool -l $APPBASE/Contents/Resources/jre/lib/libjava.dylib | awk '/LC_BUILD_VERSION/{f=1} f && /minos/{print $2; exit}')
+    echo "minos: RL: $RL_MINOS Java: $JAVA_MINOS"
+
+    if [ "$(printf '%s\n%s\n' "$RL_MINOS" "$JAVA_MINOS" | sort -V | tail -n1)" = "$JAVA_MINOS" ] && [ "$JAVA_MINOS" != "$RL_MINOS" ] ; then
+        echo "Java minimum macOS version ($JAVA_MINOS) is greater than Aleges minimum macOS version ($RL_MINOS)"
+        exit 1
+    fi
 }
 
 dmg() {
     SIGNING_IDENTITY="Developer ID Application"
     codesign -f -s "${SIGNING_IDENTITY}" --entitlements osx/signing.entitlements --options runtime $APPBASE || true
 
-    # create-dmg exits with an error code due to no code signing, but is still okay
-    create-dmg $APPBASE . || true
-    mv Aleges\ *.dmg Aleges-aarch64.dmg
+    create-dmg \
+      --volname Aleges \
+      --volicon osx/runelite.icns \
+      --window-size 660 400 \
+      --icon-size 160 \
+      --icon Aleges.app 180 170 \
+      --app-drop-link 480 170 \
+      --format ULFO \
+      --filesystem APFS \
+      Aleges-aarch64.dmg \
+      $APPBASE
 
     # dump for CI
     hdiutil imageinfo Aleges-aarch64.dmg
-
-    if ! hdiutil imageinfo Aleges-aarch64.dmg | grep -q "Format: ULFO" ; then
-        echo Format of dmg is not ULFO
-        exit 1
-    fi
-
-    if ! hdiutil imageinfo Aleges-aarch64.dmg | grep -q "Apple_HFS" ; then
-        echo Filesystem of dmg is not Apple_HFS
-        exit 1
-    fi
 
     # Notarize app
     if xcrun notarytool submit Aleges-aarch64.dmg --wait --keychain-profile "AC_PASSWORD" ; then
