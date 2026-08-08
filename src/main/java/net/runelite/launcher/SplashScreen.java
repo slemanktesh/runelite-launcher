@@ -41,7 +41,7 @@ import java.lang.reflect.InvocationTargetException;
 @Slf4j
 public class SplashScreen extends JFrame implements ActionListener
 {
-	private static final Color BRAND_ORANGE = new Color(0, 194, 0/*220, 138, 0*/);
+	static final Color ALEGES_PROGRESS_COLOR = new Color(220, 138, 0);
 	private static final Color DARKER_GRAY_COLOR = new Color(30, 30, 30);
 
 	private static final int WIDTH = 200;
@@ -94,8 +94,8 @@ public class SplashScreen extends JFrame implements ActionListener
 		y += action.getHeight() + PAD;
 
 		pane.add(progress);
-		progress.setForeground(BRAND_ORANGE);
-		progress.setBackground(BRAND_ORANGE.darker().darker());
+		progress.setForeground(ALEGES_PROGRESS_COLOR);
+		progress.setBackground(ALEGES_PROGRESS_COLOR.darker().darker());
 		progress.setBorder(new EmptyBorder(0, 0, 0, 0));
 		progress.setBounds(0, y, WIDTH, 14);
 		progress.setFont(font);

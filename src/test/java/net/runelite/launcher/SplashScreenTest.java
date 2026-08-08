@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Abex
+ * Copyright (c) 2026, Aleges
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,22 +24,16 @@
  */
 package net.runelite.launcher;
 
+import java.awt.Color;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class VersionTest
+public class SplashScreenTest
 {
 	@Test
-	public void testVersionCompare()
+	public void testAlegesProgressColor()
 	{
-		assertTrue(Launcher.compareVersion("1.2.3-SNAPSHOT", "1.2.3") > 0);
-		assertTrue(Launcher.compareVersion("1.2.3", "1.2.3") == 0);
-		assertTrue(Launcher.compareVersion("1.2.3", "1.2") > 0);
-		assertTrue(Launcher.compareVersion("2.2.3", "1.2.3") > 0);
-		assertTrue(Launcher.compareVersion("1.2.3", "1.2.3.1") < 0);
-		assertTrue(Launcher.compareVersion("1.2.3-SNAPSHOT", "1.2.3.1") < 0);
-		assertTrue(Launcher.compareVersion("2.8.2", "2.8.1-SNAPSHOT") > 0);
-		assertTrue(Launcher.compareVersion("2.8.3", "2.8.2") > 0);
+		assertEquals(new Color(220, 138, 0), SplashScreen.ALEGES_PROGRESS_COLOR);
 	}
 }
