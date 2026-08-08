@@ -137,3 +137,30 @@ jobs:
           build/website-downloads/aleges-macos-apple-silicon.dmg
           build/website-downloads/aleges-macos-app.tar
         if-no-files-found: error
+  website-release:
+    needs: [windows, linux, macos]
+    runs-on: windows-2022
+    steps:
+    - uses: actions/checkout@v7
+    - uses: actions/download-artifact@v8
+      with:
+        pattern: website-*
+        path: build/website-release-input
+        merge-multiple: true
+    - name: assemble website release
+      shell: pwsh
+      run: |
+        ./ci/prepare-website-release.ps1 `
+          -ArtifactsDirectory build/website-release-input `
+          -OutputDirectory build/website-release
+    - name: validate website release
+      shell: pwsh
+      run: |
+        ./ci/prepare-website-release.ps1 `
+          -OutputDirectory build/website-release `
+          -ValidateOnly
+    - uses: actions/upload-artifact@v7
+      with:
+        name: website-release
+        path: build/website-release
+        if-no-files-found: error
