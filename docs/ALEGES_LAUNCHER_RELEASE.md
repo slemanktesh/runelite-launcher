@@ -54,7 +54,7 @@ Do not accept an upstream conflict resolution that silently restores RuneLite na
 The launcher version is assigned in `build.gradle.kts`. Every set of launcher bytes published to players must use a version strictly newer than every previously published or quarantined build.
 
 - Version `2.8.3` is already assigned to the validated Aleges release from launcher commit `9631a5002a5f9cdef818a42b724dc1bf7c0fed74`.
-- The designated 2.8.3 release-candidate bytes remain the validated `website-release` from successful workflow run `31243423957`; they become production only after the Website publication and public-verification gates pass. Do not replace them with a second rebuild of the same version.
+- The production 2.8.3 bytes are exactly the validated `website-release` from successful workflow run `31243423957`, published through Website release-content commit `9ef5b0fd41d1bf05208cdc1fb823747a57ff6127` and publicly verified on 2026-08-08. Do not replace them with a second rebuild of the same version.
 - The next different launcher build published to the Website must therefore be `2.8.4` or newer.
 - Never rebuild changed bytes and publish them under an existing immutable filename such as `aleges-launcher-2.8.3-windows-x64.exe`.
 - A CI-only packaging or documentation run may retain the source version, but its rebuilt installers must not replace already-published immutable files. Bump the version before using a fresh build as a new launcher release.
