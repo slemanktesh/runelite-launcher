@@ -27,8 +27,7 @@ $canonicalFileNames = @(
     "aleges-linux-aarch64.AppImage",
     "aleges-client.jar",
     "aleges-macos-intel.dmg",
-    "aleges-macos-apple-silicon.dmg",
-    "aleges-macos-app.tar"
+    "aleges-macos-apple-silicon.dmg"
 )
 
 $updateTargets = @(
@@ -276,12 +275,12 @@ function Assert-Release
         $immutableItem = Get-Item -LiteralPath $immutablePath
         $immutableHash = Get-LowercaseSha256 -Path $immutablePath
         $canonicalHash = Get-LowercaseSha256 -Path $canonicalPath
-        if ($immutableItem.Length -ne (Get-Item -LiteralPath $canonicalPath).Length -or $immutableHash -ne $canonicalHash)
+        if ($immutableItem.Length -ne (Get-Item -LiteralPath $canonicalPath).Length -or $immutableHash -cne $canonicalHash)
         {
             throw "Immutable file does not match its canonical source: $immutableName"
         }
 
-        $matchingUpdates = @($updates | Where-Object { $_.os -eq $target.Os -and $_.arch -eq $target.Arch })
+        $matchingUpdates = @($updates | Where-Object { $_.os -ceq $target.Os -and $_.arch -ceq $target.Arch })
         if ($matchingUpdates.Count -ne 1)
         {
             throw "Expected one update selector for $($target.Os)/$($target.Arch); found $($matchingUpdates.Count)."
@@ -289,16 +288,18 @@ function Assert-Release
 
         $update = $matchingUpdates[0]
         $actualProperties = @($update.PSObject.Properties.Name) | Sort-Object
-        if (($actualProperties -join "\n") -ne ($expectedProperties -join "\n"))
+        if (($actualProperties -join "\n") -cne ($expectedProperties -join "\n"))
         {
             throw "Update entry for $($target.Os)/$($target.Arch) does not have the exact Update property set."
         }
 
         $expectedUrl = "https://aleges.com/downloads/$immutableName"
-        if ($update.name -ne $immutableName -or
-            $update.version -ne $Version -or
-            $update.minimumVersion -ne "2.6.0" -or
-            $update.url -ne $expectedUrl -or
+        if ($update.os -cne $target.Os -or
+            $update.arch -cne $target.Arch -or
+            $update.name -cne $immutableName -or
+            $update.version -cne $Version -or
+            $update.minimumVersion -cne "2.6.0" -or
+            $update.url -cne $expectedUrl -or
             $update.hash -cne $immutableHash -or
             [int64] $update.size -ne $immutableItem.Length -or
             [double] $update.rollout -ne 1)
