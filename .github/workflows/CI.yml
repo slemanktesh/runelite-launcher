@@ -1,9 +1,9 @@
 name: CI
 
-on: [ push, pull_request ]
-
-env:
-  RUNELITE_PROFILE: ${{ vars.RUNELITE_PROFILE }}
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
 
 jobs:
   windows:
@@ -38,7 +38,7 @@ jobs:
         cd liblauncher\detours\src
         nmake
     - name: build launcher
-      run: ./gradlew build -P RUNELITE_BUILD=$env:RUNELITE_PROFILE --no-daemon
+      run: ./gradlew build -P RUNELITE_BUILD=runelite --no-daemon
     - name: x64 installer
       shell: cmd
       run: |
@@ -87,7 +87,7 @@ jobs:
         distribution: temurin
         cache: gradle
     - name: build
-      run: ./gradlew build -P RUNELITE_BUILD=$RUNELITE_PROFILE
+      run: ./gradlew build -P RUNELITE_BUILD=runelite
     - run: ./build-linux-x86_64.sh
     - run: ./build-linux-aarch64.sh
     - name: stage website downloads
@@ -117,7 +117,7 @@ jobs:
         distribution: temurin
         cache: gradle
     - name: build
-      run: ./gradlew build -P RUNELITE_BUILD=$RUNELITE_PROFILE
+      run: ./gradlew build -P RUNELITE_BUILD=runelite
     - name: macos-x64
       run: ./build-osx-x64.sh --build --dmg
     - name: macos-aarch64

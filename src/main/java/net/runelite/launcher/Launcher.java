@@ -53,7 +53,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
@@ -61,6 +60,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -99,9 +99,7 @@ public class Launcher
 	static final String LAUNCHER_EXECUTABLE_NAME_OSX = SERVER_NAME;
 	static boolean nativesLoaded;
 
-	static HttpClient httpClient;
-
-	private static final boolean JAR_HASH_MODE = false;
+	private static HttpClient httpClient;
 
 	private static OptionSet parseArgs(String[] args)
 	{
@@ -365,13 +363,6 @@ public class Launcher
 			// update packr vmargs to the launcher vmargs from bootstrap.
 			PackrConfig.updateLauncherArgs(bootstrap, settings);
 
-			if (!REPO_DIR.exists() && !REPO_DIR.mkdirs())
-			{
-				log.error("unable to create repo directory {}", REPO_DIR);
-				SwingUtilities.invokeLater(() -> new FatalErrorDialog("Unable to create " + SERVER_NAME + " directory " + REPO_DIR.getAbsolutePath() + ". Check your filesystem permissions are correct.").open());
-				return;
-			}
-
 			// Determine artifacts for this OS
 			List<Artifact> artifacts = Arrays.stream(bootstrap.getArtifacts())
 				.filter(a ->
@@ -405,37 +396,27 @@ public class Launcher
 			// Clean out old artifacts from the repository
 			clean(artifacts);
 
-			if (JAR_HASH_MODE) {
-				try
-				{
-					download(artifacts, settings.isNodiffs());
-				}
-				catch (IOException ex)
-				{
-					log.error("unable to download artifacts", ex);
-					SwingUtilities.invokeLater(() -> FatalErrorDialog.showNetErrorWindow("downloading the client", ex));
-					return;
-				}
+			try
+			{
+				download(artifacts, settings.isNodiffs());
+			}
+			catch (IOException ex)
+			{
+				log.error("unable to download artifacts", ex);
+				SwingUtilities.invokeLater(() -> FatalErrorDialog.showNetErrorWindow("downloading the client", ex));
+				return;
+			}
 
-				SplashScreen.stage(.80, null, "Verifying");
-				try
-				{
-					verifyJarHashes(artifacts);
-				}
-				catch (VerificationException ex)
-				{
-					log.error("Unable to verify artifacts", ex);
-					SwingUtilities.invokeLater(() -> FatalErrorDialog.showNetErrorWindow("verifying downloaded files", ex));
-					return;
-				}
-			} else {
-				try {
-					DownloadSimple.download(artifacts);
-				} catch (final IOException ex) {
-					log.error("unable to download artifacts", ex);
-					SwingUtilities.invokeLater(() -> FatalErrorDialog.showNetErrorWindow("downloading the client", ex));
-					return;
-				}
+			SplashScreen.stage(.80, null, "Verifying");
+			try
+			{
+				verifyJarHashes(artifacts);
+			}
+			catch (VerificationException ex)
+			{
+				log.error("Unable to verify artifacts", ex);
+				SwingUtilities.invokeLater(() -> FatalErrorDialog.showNetErrorWindow("verifying downloaded files", ex));
+				return;
 			}
 
 			final Collection<String> clientArgs = getClientArgs(settings);
@@ -527,13 +508,22 @@ public class Launcher
 
 		if (bootstrapResp.statusCode() != 200)
 		{
-			throw new IOException("Unable to download bootstrap (status code " + bootstrapResp.statusCode() + "): " + new String(bootstrapResp.body()));
+			throw new IOException("Unable to download bootstrap (status code " + bootstrapResp.statusCode() + "): " +
+				new String(bootstrapResp.body(), StandardCharsets.UTF_8));
 		}
 
-		final byte[] bytes = bootstrapResp.body();
+		return parseBootstrap(bootstrapResp.body());
+	}
 
-		final Gson g = new Gson();
-		return g.fromJson(new InputStreamReader(new ByteArrayInputStream(bytes)), Bootstrap.class);
+	static Bootstrap parseBootstrap(byte[] bytes)
+	{
+		String bootstrapJson = new String(bytes, StandardCharsets.UTF_8);
+		if (!bootstrapJson.isEmpty() && bootstrapJson.charAt(0) == 0xFEFF)
+		{
+			bootstrapJson = bootstrapJson.substring(1);
+		}
+
+		return new Gson().fromJson(bootstrapJson, Bootstrap.class);
 	}
 
 	private static boolean jvmOutdated(Bootstrap bootstrap)

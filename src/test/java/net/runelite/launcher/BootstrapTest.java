@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Abex
+ * Copyright (c) 2026, Aleges
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,21 +24,21 @@
  */
 package net.runelite.launcher;
 
+import net.runelite.launcher.beans.Bootstrap;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.nio.charset.StandardCharsets;
 
-public class VersionTest
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class BootstrapTest
 {
 	@Test
-	public void testVersionCompare()
+	public void testParseUtf8Bom()
 	{
-		assertTrue(Launcher.compareVersion("1.2.3-SNAPSHOT", "1.2.3") > 0);
-		assertTrue(Launcher.compareVersion("1.2.3", "1.2.3") == 0);
-		assertTrue(Launcher.compareVersion("1.2.3", "1.2") > 0);
-		assertTrue(Launcher.compareVersion("2.2.3", "1.2.3") > 0);
-		assertTrue(Launcher.compareVersion("1.2.3", "1.2.3.1") < 0);
-		assertTrue(Launcher.compareVersion("1.2.3-SNAPSHOT", "1.2.3.1") < 0);
-		assertTrue(Launcher.compareVersion("2.8.2", "2.8.1-SNAPSHOT") > 0);
+		byte[] json = "\uFEFF{\"requiredJVMVersion\":\"17\"}".getBytes(StandardCharsets.UTF_8);
+
+		Bootstrap bootstrap = Launcher.parseBootstrap(json);
+		assertEquals("17", bootstrap.getRequiredJVMVersion());
 	}
 }

@@ -35,7 +35,7 @@ repositories {
 }
 
 group = "net.runelite"
-version = "2.8.1-SNAPSHOT"
+version = "2.8.2"
 description = "Aleges Launcher"
 
 dependencies {
@@ -57,11 +57,16 @@ dependencies {
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
     testImplementation(libs.junit)
+    testRuntimeOnly(libs.junit.platform.launcher)
 }
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
     options.release.set(17)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
 
 tasks.withType<AbstractArchiveTask>().configureEach {

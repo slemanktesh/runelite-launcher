@@ -1,20 +1,50 @@
 {
     "artifacts": [
         {
-            "hash": "caf3eb630dc6d5b46a20cd6c075cf7f61e37df79daa4fbb7d7fca156bd37c6ca",
-            "name": "client-1.11.11.jar",
-            "path": "https://repo.runelite.net/net/runelite/client/1.11.11/client-1.11.11.jar",
-            "size": 5203409
+            "hash": "7ec7a186617d1eefdc89fb1534817f878c8c62c9554f0ddfd56df680fa5059ff",
+            "name": "aleges-client-1.12.35-rev240-1.jar",
+            "path": "https://aleges.com/downloads/aleges-client-1.12.35-rev240-1.jar",
+            "size": 31627969
+        },
+        {
+            "hash": "f4f4c13cd70224ec443753837f6652ec7ed11c5857ffc3e7d03e216aef6e663b",
+            "name": "lwjgl-3.3.2-natives-linux-arm64.jar",
+            "path": "https://aleges.com/downloads/lwjgl-3.3.2-natives-linux-arm64.jar",
+            "platform": [
+                {
+                    "arch": "aarch64",
+                    "name": "linux"
+                }
+            ],
+            "size": 90795
+        },
+        {
+            "hash": "836e5641627f7bf3c966c93946f400cb77cdf65b8a347763e55e069d313e6def",
+            "name": "lwjgl-opengl-3.3.2-natives-linux-arm64.jar",
+            "path": "https://aleges.com/downloads/lwjgl-opengl-3.3.2-natives-linux-arm64.jar",
+            "platform": [
+                {
+                    "arch": "aarch64",
+                    "name": "linux"
+                }
+            ],
+            "size": 58627
         }
     ],
     "clientJvm17Arguments": [
         "-XX:+DisableAttachMechanism",
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.net=ALL-UNNAMED",
+        "--add-opens=java.base/java.io=ALL-UNNAMED",
         "-Xmx768m",
         "-Xss2m",
         "-XX:CompileThreshold=1500"
     ],
     "clientJvm17MacArguments": [
         "-XX:+DisableAttachMechanism",
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.net=ALL-UNNAMED",
+        "--add-opens=java.base/java.io=ALL-UNNAMED",
         "-Xmx768m",
         "-Xss2m",
         "-XX:CompileThreshold=1500",
@@ -84,5 +114,5 @@
         "-Xss2m",
         "-XX:CompileThreshold=1500"
     ],
-    "version": "1.11.11"
+    "version": "1.12.35"
 }
